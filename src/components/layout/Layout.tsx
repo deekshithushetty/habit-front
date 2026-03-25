@@ -9,7 +9,7 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children, showNav = true }) => {
   return (
     <div className="min-h-screen min-h-[100dvh] bg-slate-50">
-      <main className={`max-w-lg mx-auto px-4 pt-4 ${showNav ? 'pb-nav' : ''}`}>
+      <main className={`max-w-lg mx-auto px-4 pt-4 ${showNav ? 'pb-32' : ''}`}>
         {children}
       </main>
       {showNav && <BottomNav />}
