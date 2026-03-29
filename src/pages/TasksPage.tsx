@@ -3,34 +3,13 @@ import { useTasksStore, useUIStore } from '../store';
 import Layout from '../components/layout/Layout';
 import EmptyState from '../components/ui/EmptyState';
 import { TaskSkeleton } from '../components/ui/Skeleton';
-import {
-  Briefcase,
-  Home,
-  Dumbbell,
-  BookOpen,
-  Search,
-  Plus,
-  Check,
-  MoreVertical,
-  Pencil,
-  Trash2,
-  ClipboardList,
-  LucideIcon,
-} from 'lucide-react';
 import type { Task } from '../types';
 
-// Category config with Lucide icons
-interface CategoryConfig {
-  icon: LucideIcon;
-  label: string;
-  color: string;
-}
-
-const categoryConfig: Record<string, CategoryConfig> = {
-  work: { icon: Briefcase, label: 'Work', color: 'bg-blue-100 text-blue-700' },
-  personal: { icon: Home, label: 'Personal', color: 'bg-purple-100 text-purple-700' },
-  health: { icon: Dumbbell, label: 'Health', color: 'bg-green-100 text-green-700' },
-  learning: { icon: BookOpen, label: 'Learning', color: 'bg-amber-100 text-amber-700' },
+const categoryConfig = {
+  work: { emoji: '💼', label: 'Work', color: 'bg-blue-100 text-blue-700' },
+  personal: { emoji: '🏠', label: 'Personal', color: 'bg-purple-100 text-purple-700' },
+  health: { emoji: '💪', label: 'Health', color: 'bg-green-100 text-green-700' },
+  learning: { emoji: '📚', label: 'Learning', color: 'bg-amber-100 text-amber-700' },
 };
 
 type FilterType = 'all' | 'today' | 'upcoming' | 'completed';
@@ -68,11 +47,9 @@ const TasksPage: React.FC = () => {
 
         {/* Search */}
         <div className="relative">
-          <Search
-            size={20}
-            strokeWidth={2}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-          />
+          <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
           <input
             type="text"
             placeholder="Search tasks..."
@@ -108,7 +85,7 @@ const TasksPage: React.FC = () => {
           </div>
         ) : filteredTasks.length === 0 ? (
           <EmptyState
-            icon={ClipboardList}
+            icon="📋"
             title={searchQuery ? 'No matching tasks' : 'No tasks found'}
             description={searchQuery ? 'Try a different search term' : 'Add your first task to get started'}
             actionLabel={!searchQuery ? 'Add Task' : undefined}
@@ -135,7 +112,9 @@ const TasksPage: React.FC = () => {
         className="fixed bottom-24 right-4 w-14 h-14 bg-indigo-500 text-white rounded-full shadow-lg hover:bg-indigo-600 transition-colors flex items-center justify-center z-30"
         aria-label="Add task"
       >
-        <Plus size={28} strokeWidth={2} />
+        <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+        </svg>
       </button>
     </Layout>
   );
@@ -149,7 +128,6 @@ const TaskListItem: React.FC<{
 }> = ({ task, onToggle, onEdit, onDelete }) => {
   const [showActions, setShowActions] = useState(false);
   const category = categoryConfig[task.category];
-  const CategoryIcon = category.icon;
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -160,7 +138,7 @@ const TaskListItem: React.FC<{
 
     if (taskDate.getTime() === today.getTime()) return 'Today';
     if (taskDate.getTime() === today.getTime() + 86400000) return 'Tomorrow';
-
+    
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
@@ -180,7 +158,11 @@ const TaskListItem: React.FC<{
               : 'border-slate-300 hover:border-indigo-400'
           }`}
         >
-          {task.completed && <Check size={14} strokeWidth={3} className="text-white" />}
+          {task.completed && (
+            <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+            </svg>
+          )}
         </button>
 
         {/* Content */}
@@ -189,11 +171,12 @@ const TaskListItem: React.FC<{
             {task.title}
           </p>
           <div className="flex items-center gap-2 mt-1.5">
-            <span className={`text-xs px-2 py-0.5 rounded-full flex items-center gap-1 ${category.color}`}>
-              <CategoryIcon size={12} strokeWidth={2} />
-              {category.label}
+            <span className={`text-xs px-2 py-0.5 rounded-full ${category.color}`}>
+              {category.emoji} {category.label}
             </span>
-            {task.time && <span className="text-xs text-slate-400">{task.time}</span>}
+            {task.time && (
+              <span className="text-xs text-slate-400">{task.time}</span>
+            )}
             <span className="text-xs text-slate-400">{formatDate(task.date)}</span>
           </div>
         </div>
@@ -204,29 +187,29 @@ const TaskListItem: React.FC<{
             onClick={() => setShowActions(!showActions)}
             className="w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400 transition-colors"
           >
-            <MoreVertical size={20} strokeWidth={2} />
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+            </svg>
           </button>
-
+          
           {showActions && (
             <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-slate-100 py-1 min-w-[120px] z-10 animate-scale-in">
               <button
-                onClick={() => {
-                  onEdit();
-                  setShowActions(false);
-                }}
+                onClick={() => { onEdit(); setShowActions(false); }}
                 className="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2"
               >
-                <Pencil size={16} strokeWidth={2} />
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
                 Edit
               </button>
               <button
-                onClick={() => {
-                  onDelete();
-                  setShowActions(false);
-                }}
+                onClick={() => { onDelete(); setShowActions(false); }}
                 className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
               >
-                <Trash2 size={16} strokeWidth={2} />
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
                 Delete
               </button>
             </div>

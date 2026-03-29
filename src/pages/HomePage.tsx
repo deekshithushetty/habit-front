@@ -1,16 +1,4 @@
 import React, { useEffect } from 'react';
-import {
-  Briefcase,
-  Home,
-  Dumbbell,
-  BookOpen,
-  Plus,
-  Check,
-  ClipboardList,
-  Sparkles,
-  Flame,
-  LucideIcon,
-} from 'lucide-react';
 import { useAuthStore, useTasksStore, useHabitsStore, useUIStore } from '../store';
 import Layout from '../components/layout/Layout';
 import ProgressRing from '../components/ui/ProgressRing';
@@ -18,36 +6,12 @@ import EmptyState from '../components/ui/EmptyState';
 import { TaskSkeleton, HabitSkeleton } from '../components/ui/Skeleton';
 import type { Task, Habit } from '../types';
 
-// Category config with Lucide icons
-interface CategoryConfig {
-  icon: LucideIcon;
-  label: string;
-  color: string;
-}
-
-const categoryConfig: Record<string, CategoryConfig> = {
-  work: { icon: Briefcase, label: 'Work', color: 'bg-blue-100 text-blue-700' },
-  personal: { icon: Home, label: 'Personal', color: 'bg-purple-100 text-purple-700' },
-  health: { icon: Dumbbell, label: 'Health', color: 'bg-green-100 text-green-700' },
-  learning: { icon: BookOpen, label: 'Learning', color: 'bg-amber-100 text-amber-700' },
-};
-
-// Icon mapping for habits (stored as string IDs in DB)
-const habitIconMap: Record<string, LucideIcon> = {
-  sparkles: Sparkles,
-  running: Dumbbell,
-  reading: BookOpen,
-  fitness: Dumbbell,
-  meditation: Dumbbell,
-  water: Dumbbell,
-  target: Dumbbell,
-  art: Dumbbell,
-  music: Dumbbell,
-  work: Briefcase,
-  growth: Dumbbell,
-  coffee: Dumbbell,
-  sleep: Home,
-  writing: BookOpen,
+// Category config
+const categoryConfig = {
+  work: { emoji: '💼', label: 'Work', color: 'bg-blue-100 text-blue-700' },
+  personal: { emoji: '🏠', label: 'Personal', color: 'bg-purple-100 text-purple-700' },
+  health: { emoji: '💪', label: 'Health', color: 'bg-green-100 text-green-700' },
+  learning: { emoji: '📚', label: 'Learning', color: 'bg-amber-100 text-amber-700' },
 };
 
 const HomePage: React.FC = () => {
@@ -69,7 +33,7 @@ const HomePage: React.FC = () => {
     taskDate.setHours(0, 0, 0, 0);
     return taskDate.getTime() === today.getTime();
   });
-
+  
   const completedToday = todayTasks.filter((t) => t.completed).length;
   const progress = todayTasks.length > 0 ? (completedToday / todayTasks.length) * 100 : 0;
 
@@ -96,7 +60,7 @@ const HomePage: React.FC = () => {
         {/* Header */}
         <div className="pt-4">
           <h1 className="text-2xl font-bold text-slate-800">
-            {getGreeting()}, {user?.name?.split(' ')[0] || 'there'}!
+            {getGreeting()}, {user?.name?.split(' ')[0] || 'there'}! 👋
           </h1>
           <p className="text-slate-500 mt-1">{formatDate()}</p>
         </div>
@@ -130,7 +94,7 @@ const HomePage: React.FC = () => {
               + Add
             </button>
           </div>
-
+          
           {tasksLoading ? (
             <div className="space-y-3">
               <TaskSkeleton />
@@ -138,7 +102,7 @@ const HomePage: React.FC = () => {
             </div>
           ) : todayTasks.length === 0 ? (
             <EmptyState
-              icon={ClipboardList}
+              icon="📋"
               title="No tasks for today"
               description="Add a task to get started with your day"
               actionLabel="Add Task"
@@ -169,7 +133,7 @@ const HomePage: React.FC = () => {
               + Add
             </button>
           </div>
-
+          
           {habitsLoading ? (
             <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
               <HabitSkeleton />
@@ -177,7 +141,7 @@ const HomePage: React.FC = () => {
             </div>
           ) : habits.length === 0 ? (
             <EmptyState
-              icon={Sparkles}
+              icon="✨"
               title="No habits yet"
               description="Build positive habits and track your streaks"
               actionLabel="Add Habit"
@@ -199,7 +163,9 @@ const HomePage: React.FC = () => {
         className="fixed bottom-24 right-4 w-14 h-14 bg-indigo-500 text-white rounded-full shadow-lg hover:bg-indigo-600 transition-colors flex items-center justify-center z-30"
         aria-label="Add task"
       >
-        <Plus size={28} strokeWidth={2} />
+        <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+        </svg>
       </button>
     </Layout>
   );
@@ -208,8 +174,7 @@ const HomePage: React.FC = () => {
 // Task Card Component
 const TaskCard: React.FC<{ task: Task; onToggle: () => void }> = ({ task, onToggle }) => {
   const category = categoryConfig[task.category];
-  const CategoryIcon = category.icon;
-
+  
   return (
     <div
       className={`bg-white rounded-xl p-4 shadow-sm border transition-all ${
@@ -226,19 +191,24 @@ const TaskCard: React.FC<{ task: Task; onToggle: () => void }> = ({ task, onTogg
           }`}
           aria-label={task.completed ? 'Mark incomplete' : 'Mark complete'}
         >
-          {task.completed && <Check size={14} strokeWidth={3} className="text-white" />}
+          {task.completed && (
+            <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+            </svg>
+          )}
         </button>
-
+        
         <div className="flex-1 min-w-0">
           <p className={`font-medium ${task.completed ? 'text-slate-400 line-through' : 'text-slate-800'}`}>
             {task.title}
           </p>
           <div className="flex items-center gap-2 mt-1">
-            <span className={`text-xs px-2 py-0.5 rounded-full flex items-center gap-1 ${category.color}`}>
-              <CategoryIcon size={12} strokeWidth={2} />
-              {category.label}
+            <span className={`text-xs px-2 py-0.5 rounded-full ${category.color}`}>
+              {category.emoji} {category.label}
             </span>
-            {task.time && <span className="text-xs text-slate-400">{task.time}</span>}
+            {task.time && (
+              <span className="text-xs text-slate-400">{task.time}</span>
+            )}
           </div>
         </div>
       </div>
@@ -249,23 +219,19 @@ const TaskCard: React.FC<{ task: Task; onToggle: () => void }> = ({ task, onTogg
 // Habit Card Component
 const HabitCard: React.FC<{ habit: Habit; onIncrement: () => void }> = ({ habit, onIncrement }) => {
   const progressPercent = Math.min((habit.progress / habit.target) * 100, 100);
-
-  // Get the icon component from the habit's stored icon ID
-  const HabitIcon = habitIconMap[habit.icon] || Sparkles;
-
+  
   return (
     <div className="flex-shrink-0 w-40 bg-white rounded-xl p-4 shadow-sm border border-slate-100">
       <div className="flex items-center justify-between mb-2">
-        <HabitIcon size={24} strokeWidth={2} className="text-slate-700" />
+        <span className="text-2xl">{habit.icon}</span>
         {habit.streak >= 7 && (
-          <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
-            <Flame size={12} strokeWidth={2} />
-            {habit.streak}
+          <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium">
+            🔥 {habit.streak}
           </span>
         )}
       </div>
       <h3 className="font-medium text-slate-800 text-sm truncate">{habit.name}</h3>
-
+      
       {/* Progress bar */}
       <div className="mt-3 h-2 bg-slate-100 rounded-full overflow-hidden">
         <div
@@ -273,7 +239,7 @@ const HabitCard: React.FC<{ habit: Habit; onIncrement: () => void }> = ({ habit,
           style={{ width: `${progressPercent}%` }}
         />
       </div>
-
+      
       <div className="flex items-center justify-between mt-2">
         <span className="text-xs text-slate-500">
           {habit.progress}/{habit.target}
@@ -283,7 +249,7 @@ const HabitCard: React.FC<{ habit: Habit; onIncrement: () => void }> = ({ habit,
           className="w-7 h-7 bg-indigo-500 text-white rounded-full text-sm font-medium hover:bg-indigo-600 transition-colors flex items-center justify-center"
           aria-label="Increment progress"
         >
-          <Plus size={16} strokeWidth={2} />
+          +
         </button>
       </div>
     </div>

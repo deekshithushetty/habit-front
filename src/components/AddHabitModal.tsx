@@ -1,60 +1,10 @@
 import React, { useState } from 'react';
-import { 
-  Sparkles, 
-  Activity, 
-  BookOpen, 
-  Dumbbell, 
-  Brain, 
-  Droplet, 
-  Target, 
-  Palette, 
-  Music, 
-  Laptop, 
-  Sprout, 
-  Coffee, 
-  BedSingle, 
-  FileText,
-  LucideIcon
-} from 'lucide-react';
 import { useHabitsStore, useUIStore } from '../store';
 import Modal from '../components/ui/Modal';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 
-// Icon mapping with IDs for storage and components for rendering
-const iconMap: Record<string, LucideIcon> = {
-  sparkles: Sparkles,
-  running: Activity,
-  reading: BookOpen,
-  fitness: Dumbbell,
-  meditation: Brain,
-  water: Droplet,
-  target: Target,
-  art: Palette,
-  music: Music,
-  work: Laptop,
-  growth: Sprout,
-  coffee: Coffee,
-  sleep: BedSingle,
-  writing: FileText,
-};
-
-const iconOptions = [
-  { id: 'sparkles', label: 'Sparkles' },
-  { id: 'running', label: 'Running' },
-  { id: 'reading', label: 'Reading' },
-  { id: 'fitness', label: 'Fitness' },
-  { id: 'meditation', label: 'Meditation' },
-  { id: 'water', label: 'Water' },
-  { id: 'target', label: 'Target' },
-  { id: 'art', label: 'Art' },
-  { id: 'music', label: 'Music' },
-  { id: 'work', label: 'Work' },
-  { id: 'growth', label: 'Growth' },
-  { id: 'coffee', label: 'Coffee' },
-  { id: 'sleep', label: 'Sleep' },
-  { id: 'writing', label: 'Writing' },
-];
+const iconOptions = ['✨', '🏃', '📚', '💪', '🧘', '💧', '🎯', '🎨', '🎵', '💻', '🌱', '☕', '🛏️', '📝'];
 
 const AddHabitModal: React.FC = () => {
   const { isAddHabitModalOpen, closeAddHabitModal } = useUIStore();
@@ -65,7 +15,7 @@ const AddHabitModal: React.FC = () => {
   const [formData, setFormData] = useState({
     name: '',
     target: 7,
-    icon: 'sparkles', // Default to Lucide icon ID
+    icon: '✨',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -77,15 +27,16 @@ const AddHabitModal: React.FC = () => {
       const success = await addHabit({
         name: formData.name.trim(),
         target: formData.target,
-        icon: formData.icon, // Store the string ID
+        icon: formData.icon,
       });
 
       if (success) {
         closeAddHabitModal();
+        // Reset form
         setFormData({
           name: '',
           target: 7,
-          icon: 'sparkles',
+          icon: '✨',
         });
       } else {
         setError('Failed to create habit. Please try again.');
@@ -104,37 +55,30 @@ const AddHabitModal: React.FC = () => {
       title="Create New Habit"
     >
       <form onSubmit={handleSubmit} className="space-y-5">
-        {/* Icon Selection */}
+        {/* Icon */}
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">
             Choose an Icon
           </label>
           <div className="grid grid-cols-7 gap-2">
-            {iconOptions.map(({ id, label }) => {
-              const Icon = iconMap[id];
-              const isSelected = formData.icon === id;
-              
-              return (
-                <button
-                  key={id}
-                  type="button"
-                  onClick={() => setFormData((prev) => ({ ...prev, icon: id }))}
-                  className={`aspect-square rounded-xl flex items-center justify-center transition-all ${
-                    isSelected
-                      ? 'bg-indigo-100 ring-2 ring-indigo-500 text-indigo-600'
-                      : 'bg-slate-50 hover:bg-slate-100 text-slate-600'
-                  }`}
-                  title={label}
-                >
-                  {/* Explicit size ensures visibility on mobile */}
-                  <Icon size={20} strokeWidth={2} />
-                </button>
-              );
-            })}
+            {iconOptions.map((icon) => (
+              <button
+                key={icon}
+                type="button"
+                onClick={() => setFormData((prev) => ({ ...prev, icon }))}
+                className={`p-3 rounded-xl text-center transition-all text-xl ${
+                  formData.icon === icon
+                    ? 'bg-indigo-100 ring-2 ring-indigo-500'
+                    : 'bg-slate-50 hover:bg-slate-100'
+                }`}
+              >
+                {icon}
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Name Input */}
+        {/* Name */}
         <Input
           label="Habit Name"
           placeholder="e.g., Morning meditation"
@@ -144,7 +88,7 @@ const AddHabitModal: React.FC = () => {
           autoFocus
         />
 
-        {/* Weekly Target */}
+        {/* Target */}
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">
             Weekly Target (times per week)
@@ -158,7 +102,7 @@ const AddHabitModal: React.FC = () => {
               onChange={(e) => setFormData((prev) => ({ ...prev, target: parseInt(e.target.value) }))}
               className="flex-1 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-500"
             />
-            <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center shrink-0">
+            <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
               <span className="text-lg font-bold text-indigo-600">{formData.target}</span>
             </div>
           </div>
@@ -169,14 +113,14 @@ const AddHabitModal: React.FC = () => {
           </p>
         </div>
 
-        {/* Error Message */}
+        {/* Error */}
         {error && (
           <div className="p-3 bg-red-50 border border-red-100 rounded-lg">
             <p className="text-sm text-red-600">{error}</p>
           </div>
         )}
 
-        {/* Action Buttons */}
+        {/* Actions */}
         <div className="flex gap-3 pt-2">
           <Button
             type="button"

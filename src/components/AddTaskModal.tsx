@@ -1,22 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Briefcase, Home, Dumbbell, BookOpen, LucideIcon } from 'lucide-react';
 import { useTasksStore, useUIStore } from '../store';
 import Modal from '../components/ui/Modal';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import type { TaskCategory, TaskFrequency } from '../types';
 
-interface CategoryOption {
-  value: TaskCategory;
-  label: string;
-  icon: LucideIcon;
-}
-
-const categoryOptions: CategoryOption[] = [
-  { value: 'work', label: 'Work', icon: Briefcase },
-  { value: 'personal', label: 'Personal', icon: Home },
-  { value: 'health', label: 'Health', icon: Dumbbell },
-  { value: 'learning', label: 'Learning', icon: BookOpen },
+const categoryOptions: { value: TaskCategory; label: string; emoji: string }[] = [
+  { value: 'work', label: 'Work', emoji: '💼' },
+  { value: 'personal', label: 'Personal', emoji: '🏠' },
+  { value: 'health', label: 'Health', emoji: '💪' },
+  { value: 'learning', label: 'Learning', emoji: '📚' },
 ];
 
 const frequencyOptions: { value: TaskFrequency; label: string }[] = [
@@ -116,19 +109,19 @@ const AddTaskModal: React.FC = () => {
             Category
           </label>
           <div className="grid grid-cols-4 gap-2">
-            {categoryOptions.map(({ value, label, icon: Icon }) => (
+            {categoryOptions.map(({ value, label, emoji }) => (
               <button
                 key={value}
                 type="button"
                 onClick={() => setFormData((prev) => ({ ...prev, category: value }))}
-                className={`flex flex-col items-center justify-center p-3 rounded-xl transition-all ${
+                className={`p-3 rounded-xl text-center transition-all ${
                   formData.category === value
-                    ? 'bg-indigo-100 ring-2 ring-indigo-500 text-indigo-600'
-                    : 'bg-slate-50 hover:bg-slate-100 text-slate-600'
+                    ? 'bg-indigo-100 ring-2 ring-indigo-500'
+                    : 'bg-slate-50 hover:bg-slate-100'
                 }`}
               >
-                <Icon size={20} strokeWidth={2} className="mb-1" />
-                <span className="text-xs font-medium">{label}</span>
+                <span className="text-xl block mb-1">{emoji}</span>
+                <span className="text-xs font-medium text-slate-600">{label}</span>
               </button>
             ))}
           </div>
@@ -176,7 +169,8 @@ const AddTaskModal: React.FC = () => {
                   formData.frequency === value
                     ? 'bg-indigo-500 text-white'
                     : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                }`}>
+                }`}
+              >
                 {label}
               </button>
             ))}
