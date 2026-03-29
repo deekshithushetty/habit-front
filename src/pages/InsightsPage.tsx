@@ -10,7 +10,34 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from 'recharts';
+import {
+  CheckCircle,
+  ClipboardList,
+  Flame,
+  Sparkles,
+  Dumbbell,
+  Star,
+  LucideIcon,
+} from 'lucide-react';
 import type { Habit } from '../types';
+
+// Icon mapping for habits (stored as string IDs in DB)
+const habitIconMap: Record<string, LucideIcon> = {
+  sparkles: Sparkles,
+  running: Dumbbell,
+  reading: Dumbbell,
+  fitness: Dumbbell,
+  meditation: Dumbbell,
+  water: Dumbbell,
+  target: Dumbbell,
+  art: Dumbbell,
+  music: Dumbbell,
+  work: Dumbbell,
+  growth: Dumbbell,
+  coffee: Dumbbell,
+  sleep: Dumbbell,
+  writing: Dumbbell,
+};
 
 const InsightsPage: React.FC = () => {
   const { tasks, fetchTasks } = useTasksStore();
@@ -26,7 +53,7 @@ const InsightsPage: React.FC = () => {
   const completedTasks = tasks.filter((t) => t.completed);
   const totalTasks = tasks.length;
   const completionRate = totalTasks > 0 ? Math.round((completedTasks.length / totalTasks) * 100) : 0;
-  
+
   const longestStreak = habits.reduce((max, h) => Math.max(max, h.streak), 0);
   const totalHabitProgress = habits.reduce((sum, h) => sum + h.progress, 0);
   const activeHabits = habits.length;
@@ -95,32 +122,36 @@ const InsightsPage: React.FC = () => {
         {/* Stats Cards */}
         <div className="grid grid-cols-2 gap-3">
           <StatCard
-            icon="✅"
+            icon={CheckCircle}
             label="Tasks Completed"
             value={completedTasks.length.toString()}
             subtext={`${completionRate}% rate`}
             color="bg-green-50"
+            iconColor="text-green-600"
           />
           <StatCard
-            icon="📋"
+            icon={ClipboardList}
             label="Total Tasks"
             value={totalTasks.toString()}
             subtext={`${totalTasks - completedTasks.length} remaining`}
             color="bg-blue-50"
+            iconColor="text-blue-600"
           />
           <StatCard
-            icon="🔥"
+            icon={Flame}
             label="Best Streak"
             value={longestStreak.toString()}
             subtext="days"
             color="bg-amber-50"
+            iconColor="text-amber-600"
           />
           <StatCard
-            icon="✨"
+            icon={Sparkles}
             label="Active Habits"
             value={activeHabits.toString()}
             subtext={`${totalHabitProgress} total progress`}
             color="bg-purple-50"
+            iconColor="text-purple-600"
           />
         </div>
 
@@ -132,20 +163,20 @@ const InsightsPage: React.FC = () => {
               {thisWeekCompleted} tasks this week
             </span>
           </div>
-          
+
           <div className="h-48">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={weeklyData} barGap={4}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
-                <XAxis 
-                  dataKey="day" 
-                  axisLine={false} 
-                  tickLine={false} 
+                <XAxis
+                  dataKey="day"
+                  axisLine={false}
+                  tickLine={false}
                   tick={{ fill: '#64748B', fontSize: 12 }}
                 />
-                <YAxis 
-                  axisLine={false} 
-                  tickLine={false} 
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
                   tick={{ fill: '#64748B', fontSize: 12 }}
                   width={30}
                 />
@@ -158,18 +189,18 @@ const InsightsPage: React.FC = () => {
                   }}
                   formatter={(value: number, name: string) => [
                     name === 'completed' ? `${value} completed` : `${value} total`,
-                    name === 'completed' ? 'Completed' : 'Total'
+                    name === 'completed' ? 'Completed' : 'Total',
                   ]}
                 />
-                <Bar 
-                  dataKey="total" 
-                  fill="#E2E8F0" 
+                <Bar
+                  dataKey="total"
+                  fill="#E2E8F0"
                   radius={[4, 4, 0, 0]}
                   name="Total"
                 />
-                <Bar 
-                  dataKey="completed" 
-                  fill="#6366F1" 
+                <Bar
+                  dataKey="completed"
+                  fill="#6366F1"
                   radius={[4, 4, 0, 0]}
                   name="Completed"
                 />
@@ -181,7 +212,7 @@ const InsightsPage: React.FC = () => {
         {/* Habits Progress */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
           <h2 className="text-lg font-semibold text-slate-800 mb-4">Habit Progress</h2>
-          
+
           {habits.length === 0 ? (
             <p className="text-center text-slate-500 py-4">No habits to show</p>
           ) : (
@@ -199,13 +230,24 @@ const InsightsPage: React.FC = () => {
           <div className="flex items-center gap-4">
             <span className="text-5xl font-bold">{completionRate}%</span>
             <div className="flex-1">
-              <p className="text-white/80 text-sm">
-                {completionRate >= 80
-                  ? "Excellent! You're on fire! 🔥"
-                  : completionRate >= 50
-                  ? "Good progress! Keep it up! 💪"
-                  : "Keep pushing! You've got this! 🌟"}
-              </p>
+              <div className="flex items-center gap-2 mb-1">
+                {completionRate >= 80 ? (
+                  <>
+                    <Flame size={16} className="text-amber-300" />
+                    <p className="text-white/90 text-sm">Excellent! You're on fire!</p>
+                  </>
+                ) : completionRate >= 50 ? (
+                  <>
+                    <Dumbbell size={16} className="text-white/80" />
+                    <p className="text-white/90 text-sm">Good progress! Keep it up!</p>
+                  </>
+                ) : (
+                  <>
+                    <Star size={16} className="text-yellow-300" />
+                    <p className="text-white/90 text-sm">Keep pushing! You've got this!</p>
+                  </>
+                )}
+              </div>
               <div className="mt-2 h-2 bg-white/20 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-white rounded-full transition-all duration-500"
@@ -221,15 +263,16 @@ const InsightsPage: React.FC = () => {
 };
 
 const StatCard: React.FC<{
-  icon: string;
+  icon: LucideIcon;
   label: string;
   value: string;
   subtext: string;
   color: string;
-}> = ({ icon, label, value, subtext, color }) => (
+  iconColor: string;
+}> = ({ icon: Icon, label, value, subtext, color, iconColor }) => (
   <div className={`${color} rounded-xl p-4`}>
     <div className="flex items-center gap-2 mb-2">
-      <span className="text-lg">{icon}</span>
+      <Icon size={20} strokeWidth={2} className={iconColor} />
       <span className="text-xs text-slate-500 font-medium">{label}</span>
     </div>
     <p className="text-2xl font-bold text-slate-800">{value}</p>
@@ -239,18 +282,22 @@ const StatCard: React.FC<{
 
 const HabitProgressItem: React.FC<{ habit: Habit }> = ({ habit }) => {
   const progressPercent = Math.min((habit.progress / habit.target) * 100, 100);
-  
+  const HabitIcon = habitIconMap[habit.icon] || Sparkles;
+
   return (
     <div>
       <div className="flex items-center justify-between mb-1.5">
         <div className="flex items-center gap-2">
-          <span>{habit.icon}</span>
+          <HabitIcon size={18} strokeWidth={2} className="text-slate-600" />
           <span className="text-sm font-medium text-slate-700">{habit.name}</span>
         </div>
-        <span className="text-xs text-slate-500">
+        <span className="text-xs text-slate-500 flex items-center gap-1">
           {habit.progress}/{habit.target}
           {habit.streak > 0 && (
-            <span className="ml-2 text-amber-500">🔥 {habit.streak}</span>
+            <span className="ml-2 text-amber-500 flex items-center gap-0.5">
+              <Flame size={12} strokeWidth={2} />
+              {habit.streak}
+            </span>
           )}
         </span>
       </div>
