@@ -3,6 +3,7 @@ import { useAuthStore, useUIStore } from '../store';
 import { useHabits, useIncrementHabitMutation } from '../hooks/useHabits';
 import { useTasks, useToggleTaskMutation } from '../hooks/useTasks';
 import Layout from '../components/layout/Layout';
+import AppIcon, { AppIconName, resolveHabitIconName } from '../components/ui/AppIcon';
 import ProgressRing from '../components/ui/ProgressRing';
 import EmptyState from '../components/ui/EmptyState';
 import Button from '../components/ui/Button';
@@ -10,10 +11,10 @@ import { TaskSkeleton, HabitSkeleton } from '../components/ui/Skeleton';
 import type { Task, Habit } from '../types';
 
 const categoryConfig = {
-  work: { emoji: '\u{1F4BC}', label: 'Work', color: 'bg-blue-100 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300' },
-  personal: { emoji: '\u{1F3E0}', label: 'Personal', color: 'bg-purple-100 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300' },
-  health: { emoji: '\u{1F4AA}', label: 'Health', color: 'bg-green-100 dark:bg-green-950/50 text-green-700 dark:text-green-300' },
-  learning: { emoji: '\u{1F4DA}', label: 'Learning', color: 'bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300' },
+  work: { icon: 'work' as AppIconName, label: 'Work', color: 'bg-blue-100 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300' },
+  personal: { icon: 'personal' as AppIconName, label: 'Personal', color: 'bg-purple-100 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300' },
+  health: { icon: 'health' as AppIconName, label: 'Health', color: 'bg-green-100 dark:bg-green-950/50 text-green-700 dark:text-green-300' },
+  learning: { icon: 'learning' as AppIconName, label: 'Learning', color: 'bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300' },
 };
 
 const HomePage: React.FC = () => {
@@ -60,7 +61,7 @@ const HomePage: React.FC = () => {
       <div className="space-y-6 animate-fade-in">
         <div className="pt-4">
           <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">
-            {getGreeting()}, {user?.name?.split(' ')[0] || 'there'}! {'\u{1F44B}'}
+            {getGreeting()}, {user?.name?.split(' ')[0] || 'there'}!
           </h1>
           <p className="text-slate-500 dark:text-slate-400 mt-1">{formatDate()}</p>
         </div>
@@ -100,7 +101,7 @@ const HomePage: React.FC = () => {
             </div>
           ) : todayTasks.length === 0 ? (
             <EmptyState
-              icon={'\u{1F4CB}'}
+              icon={<AppIcon name="task" className="w-8 h-8" />}
               title="No tasks for today"
               description="Add a task to get started with your day"
               actionLabel="Add Task"
@@ -138,7 +139,7 @@ const HomePage: React.FC = () => {
             </div>
           ) : habits.length === 0 ? (
             <EmptyState
-              icon={'\u{2728}'}
+              icon={<AppIcon name="sparkles" className="w-8 h-8" />}
               title="No habits yet"
               description="Build positive habits and track your streaks"
               actionLabel="Add Habit"
@@ -213,7 +214,7 @@ const TaskCard: React.FC<{ task: Task; onToggle: () => void }> = ({ task, onTogg
           </p>
           <div className="flex items-center gap-2 mt-1">
             <span className={`text-xs px-2 py-0.5 rounded-full ${category.color}`}>
-            <span className="emoji-safe">{category.emoji}</span> {category.label}
+              <AppIcon name={category.icon} className="w-3.5 h-3.5 inline-block mr-1 align-[-2px]" /> {category.label}
             </span>
             {task.time && (
               <span className="text-xs text-slate-400 dark:text-slate-500">{task.time}</span>
@@ -231,10 +232,12 @@ const HabitCard: React.FC<{ habit: Habit; onIncrement: () => void }> = ({ habit,
   return (
     <div className="flex-shrink-0 w-40 bg-white dark:bg-slate-900 rounded-xl p-4 shadow-sm border border-slate-100 dark:border-slate-800">
       <div className="flex items-center justify-between mb-2">
-        <span className="emoji-safe text-2xl">{habit.icon}</span>
+        <span className="text-2xl">
+          <AppIcon name={resolveHabitIconName(habit.icon)} className="w-6 h-6" />
+        </span>
         {habit.streak >= 7 && (
           <span className="text-xs bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 px-2 py-0.5 rounded-full font-medium">
-            <span className="emoji-safe">{'\u{1F525}'}</span> {habit.streak}
+            <AppIcon name="streak" className="w-3 h-3 inline-block mr-1 align-[-2px]" /> {habit.streak}
           </span>
         )}
       </div>

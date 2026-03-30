@@ -2,22 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { useUIStore } from '../store';
 import { useAddTaskMutation, useUpdateTaskMutation } from '../hooks/useTasks';
 import Modal from '../components/ui/Modal';
+import AppIcon, { AppIconName } from '../components/ui/AppIcon';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import type { TaskCategory, TaskFrequency } from '../types';
 
-const CATEGORY_EMOJI = {
-  work: '\u{1F4BC}',
-  personal: '\u{1F3E0}',
-  health: '\u{1F4AA}',
-  learning: '\u{1F4DA}',
+const CATEGORY_ICON = {
+  work: 'work',
+  personal: 'personal',
+  health: 'health',
+  learning: 'learning',
 } as const;
 
-const categoryOptions: { value: TaskCategory; label: string; emoji: string }[] = [
-  { value: 'work', label: 'Work', emoji: CATEGORY_EMOJI.work },
-  { value: 'personal', label: 'Personal', emoji: CATEGORY_EMOJI.personal },
-  { value: 'health', label: 'Health', emoji: CATEGORY_EMOJI.health },
-  { value: 'learning', label: 'Learning', emoji: CATEGORY_EMOJI.learning },
+const categoryOptions: { value: TaskCategory; label: string; icon: AppIconName }[] = [
+  { value: 'work', label: 'Work', icon: CATEGORY_ICON.work },
+  { value: 'personal', label: 'Personal', icon: CATEGORY_ICON.personal },
+  { value: 'health', label: 'Health', icon: CATEGORY_ICON.health },
+  { value: 'learning', label: 'Learning', icon: CATEGORY_ICON.learning },
 ];
 
 const frequencyOptions: { value: TaskFrequency; label: string }[] = [
@@ -113,7 +114,7 @@ const AddTaskModal: React.FC = () => {
             Category
           </label>
           <div className="grid grid-cols-4 gap-2">
-            {categoryOptions.map(({ value, label, emoji }) => (
+            {categoryOptions.map(({ value, label, icon }) => (
               <button
                 key={value}
                 type="button"
@@ -124,7 +125,9 @@ const AddTaskModal: React.FC = () => {
                     : 'bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700'
                 }`}
               >
-                <span className="emoji-safe text-xl block mb-1">{emoji}</span>
+                <span className="flex justify-center mb-1">
+                  <AppIcon name={icon} className="w-5 h-5" />
+                </span>
                 <span className="text-xs font-medium text-slate-600 dark:text-slate-300">{label}</span>
               </button>
             ))}

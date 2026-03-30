@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAuthStore, useUIStore } from '../store';
 import { useAllHabits } from '../hooks/useHabits';
+import AppIcon, { resolveHabitIconName } from '../components/ui/AppIcon';
 import Layout from '../components/layout/Layout';
 import Button from '../components/ui/Button';
 
@@ -46,7 +47,7 @@ const ProfilePage: React.FC = () => {
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Habits</p>
           </div>
           <div className="bg-white dark:bg-slate-900 rounded-xl p-4 shadow-sm border border-slate-100 dark:border-slate-800 text-center">
-            <p className="emoji-safe text-2xl font-bold text-amber-500">{'\u{1F525}'}</p>
+            <p className="text-2xl font-bold text-amber-500 flex justify-center"><AppIcon name="streak" className="w-7 h-7" /></p>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{longestStreak} best</p>
           </div>
           <div className="bg-white dark:bg-slate-900 rounded-xl p-4 shadow-sm border border-slate-100 dark:border-slate-800 text-center">
@@ -80,7 +81,7 @@ const ProfilePage: React.FC = () => {
                   className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-xl"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="text-2xl">{habit.icon}</span>
+                    <span className="text-2xl"><AppIcon name={resolveHabitIconName(habit.icon)} className="w-6 h-6" /></span>
                     <div>
                       <p className="font-medium text-slate-800 dark:text-slate-100">{habit.name}</p>
                       <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -90,7 +91,7 @@ const ProfilePage: React.FC = () => {
                   </div>
                   <div className="text-right">
                     {habit.streak > 0 && (
-                      <p className="text-sm font-medium text-amber-500"><span className="emoji-safe">{'\u{1F525}'}</span> {habit.streak} day streak</p>
+                      <p className="text-sm font-medium text-amber-500"><AppIcon name="streak" className="w-3 h-3 inline-block mr-1 align-[-2px]" />{habit.streak} day streak</p>
                     )}
                     <p className="text-xs text-slate-500 dark:text-slate-400">
                       {habit.progress}/{habit.target} this week
@@ -104,7 +105,7 @@ const ProfilePage: React.FC = () => {
 
         <div className="bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl p-6 text-white">
           <div className="flex items-center gap-3 mb-3">
-            <span className="emoji-safe text-3xl">{'\u{1F3C6}'}</span>
+            <span className="text-3xl"><AppIcon name="trophy" className="w-8 h-8" /></span>
             <div>
               <h3 className="font-semibold">Achievements</h3>
               <p className="text-sm text-white/80">Coming soon!</p>

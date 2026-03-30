@@ -1,25 +1,26 @@
 import React, { useState } from 'react';
 import { useUIStore } from '../store';
 import { useAddHabitMutation } from '../hooks/useHabits';
+import AppIcon, { AppIconName } from '../components/ui/AppIcon';
 import Modal from '../components/ui/Modal';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 
-const iconOptions = [
-  '\u{2728}',
-  '\u{1F3C3}',
-  '\u{1F4DA}',
-  '\u{1F4AA}',
-  '\u{1F9D8}',
-  '\u{1F4A7}',
-  '\u{1F3AF}',
-  '\u{1F3A8}',
-  '\u{1F3B5}',
-  '\u{1F4BB}',
-  '\u{1F331}',
-  '\u{2615}',
-  '\u{1F6CF}\u{FE0F}',
-  '\u{1F4DD}',
+const iconOptions: AppIconName[] = [
+  'sparkles',
+  'run',
+  'book',
+  'strength',
+  'mindful',
+  'water',
+  'target',
+  'art',
+  'music',
+  'laptop',
+  'plant',
+  'coffee',
+  'rest',
+  'journal',
 ];
 
 const AddHabitModal: React.FC = () => {
@@ -31,7 +32,7 @@ const AddHabitModal: React.FC = () => {
   const [formData, setFormData] = useState({
     name: '',
     target: 7,
-    icon: '\u{2728}',
+    icon: 'sparkles',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -50,7 +51,7 @@ const AddHabitModal: React.FC = () => {
       setFormData({
         name: '',
         target: 7,
-        icon: '\u{2728}',
+        icon: 'sparkles',
       });
     } catch {
       setError('Failed to create habit. Please try again.');
@@ -76,13 +77,15 @@ const AddHabitModal: React.FC = () => {
                 key={icon}
                 type="button"
                 onClick={() => setFormData((prev) => ({ ...prev, icon }))}
-                className={`emoji-safe p-3 rounded-xl text-center transition-all text-xl ${
+                className={`p-3 rounded-xl text-center transition-all ${
                   formData.icon === icon
                     ? 'bg-indigo-100 dark:bg-indigo-950/50 ring-2 ring-indigo-500'
                     : 'bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700'
                 }`}
               >
-                {icon}
+                <span className="flex justify-center">
+                  <AppIcon name={icon} className="w-5 h-5" />
+                </span>
               </button>
             ))}
           </div>
@@ -116,7 +119,7 @@ const AddHabitModal: React.FC = () => {
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 text-center">
             {formData.target === 7
-              ? 'Every day! \u{1F31F}'
+              ? 'Every day!'
               : `${7 - formData.target} rest day${7 - formData.target !== 1 ? 's' : ''} per week`}
           </p>
         </div>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAllHabits } from '../hooks/useHabits';
 import { useAllTasks } from '../hooks/useTasks';
 import Layout from '../components/layout/Layout';
+import AppIcon, { resolveHabitIconName } from '../components/ui/AppIcon';
 import {
   BarChart,
   Bar,
@@ -177,10 +178,10 @@ const InsightsPage: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-2 gap-3">
-          <StatCard icon={'\u{2705}'} label="Tasks Completed" value={completedTasks.length.toString()} subtext={`${completionRate}% rate`} color="bg-green-50 dark:bg-green-950/30" />
-          <StatCard icon={'\u{1F4CB}'} label="Total Tasks" value={totalTasks.toString()} subtext={`${totalTasks - completedTasks.length} remaining`} color="bg-blue-50 dark:bg-blue-950/30" />
-          <StatCard icon={'\u{1F525}'} label="Best Streak" value={longestStreak.toString()} subtext="days" color="bg-amber-50 dark:bg-amber-950/30" />
-          <StatCard icon={'\u{2728}'} label="Active Habits" value={activeHabits.toString()} subtext={`${totalHabitProgress} total progress`} color="bg-purple-50 dark:bg-purple-950/30" />
+          <StatCard icon={<AppIcon name="success" className="w-5 h-5" />} label="Tasks Completed" value={completedTasks.length.toString()} subtext={`${completionRate}% rate`} color="bg-green-50 dark:bg-green-950/30" />
+          <StatCard icon={<AppIcon name="task" className="w-5 h-5" />} label="Total Tasks" value={totalTasks.toString()} subtext={`${totalTasks - completedTasks.length} remaining`} color="bg-blue-50 dark:bg-blue-950/30" />
+          <StatCard icon={<AppIcon name="streak" className="w-5 h-5" />} label="Best Streak" value={longestStreak.toString()} subtext="days" color="bg-amber-50 dark:bg-amber-950/30" />
+          <StatCard icon={<AppIcon name="sparkles" className="w-5 h-5" />} label="Active Habits" value={activeHabits.toString()} subtext={`${totalHabitProgress} total progress`} color="bg-purple-50 dark:bg-purple-950/30" />
         </div>
 
         <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-800">
@@ -318,10 +319,10 @@ const InsightsPage: React.FC = () => {
             <div className="flex-1">
               <p className="text-white/80 text-sm">
                 {completionRate >= 80
-                  ? `Excellent! You're on fire! ${'\u{1F525}'}`
+                  ? "Excellent! You're on fire!"
                   : completionRate >= 50
-                    ? `Good progress! Keep it up! ${'\u{1F4AA}'}`
-                    : `Keep pushing! You've got this! ${'\u{1F31F}'}`}
+                    ? 'Good progress! Keep it up!'
+                    : "Keep pushing! You've got this!"}
               </p>
               <div className="mt-2 h-2 bg-white/20 rounded-full overflow-hidden">
                 <div className="h-full bg-white rounded-full transition-all duration-500" style={{ width: `${completionRate}%` }} />
@@ -335,7 +336,7 @@ const InsightsPage: React.FC = () => {
 };
 
 const StatCard: React.FC<{
-  icon: string;
+  icon: React.ReactNode;
   label: string;
   value: string;
   subtext: string;
@@ -343,7 +344,7 @@ const StatCard: React.FC<{
 }> = ({ icon, label, value, subtext, color }) => (
   <div className={`${color} rounded-xl p-4`}>
     <div className="flex items-center gap-2 mb-2">
-      <span className="emoji-safe text-lg">{icon}</span>
+      <span className="text-lg">{icon}</span>
       <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">{label}</span>
     </div>
     <p className="text-2xl font-bold text-slate-800 dark:text-slate-100">{value}</p>
@@ -358,13 +359,13 @@ const HabitProgressItem: React.FC<{ habit: Habit }> = ({ habit }) => {
     <div>
       <div className="flex items-center justify-between mb-1.5">
         <div className="flex items-center gap-2">
-          <span>{habit.icon}</span>
+          <span><AppIcon name={resolveHabitIconName(habit.icon)} className="w-4 h-4" /></span>
           <span className="text-sm font-medium text-slate-700 dark:text-slate-200">{habit.name}</span>
         </div>
         <span className="text-xs text-slate-500 dark:text-slate-400">
           {habit.progress}/{habit.target}
           {habit.streak > 0 && (
-            <span className="ml-2 text-amber-500"><span className="emoji-safe">{'\u{1F525}'}</span> {habit.streak}</span>
+            <span className="ml-2 text-amber-500"><AppIcon name="streak" className="w-3 h-3 inline-block mr-1 align-[-2px]" />{habit.streak}</span>
           )}
         </span>
       </div>
