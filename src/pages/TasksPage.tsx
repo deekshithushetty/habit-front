@@ -15,6 +15,12 @@ const categoryConfig = {
   learning: { icon: 'learning' as AppIconName, label: 'Learning', color: 'bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300' },
 };
 
+const frequencyConfig = {
+  once: { label: 'Once', color: 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300' },
+  daily: { label: 'Daily', color: 'bg-indigo-100 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300' },
+  weekly: { label: 'Weekly', color: 'bg-violet-100 dark:bg-violet-950/50 text-violet-700 dark:text-violet-300' },
+} as const;
+
 type FilterType = 'all' | 'today' | 'upcoming' | 'completed';
 
 const TasksPage: React.FC = () => {
@@ -136,6 +142,7 @@ const TaskListItem: React.FC<{
 }> = ({ task, onToggle, onEdit, onDelete }) => {
   const [showActions, setShowActions] = useState(false);
   const category = categoryConfig[task.category];
+  const frequency = frequencyConfig[task.frequency];
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -179,6 +186,9 @@ const TaskListItem: React.FC<{
           <div className="flex items-center gap-2 mt-1.5">
             <span className={`text-xs px-2 py-0.5 rounded-full ${category.color}`}>
               <AppIcon name={category.icon} className="w-3.5 h-3.5 inline-block mr-1 align-[-2px]" /> {category.label}
+            </span>
+            <span className={`text-xs px-2 py-0.5 rounded-full ${frequency.color}`}>
+              {frequency.label}
             </span>
             {task.time && (
               <span className="text-xs text-slate-400 dark:text-slate-500">{task.time}</span>

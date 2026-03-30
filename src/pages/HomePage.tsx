@@ -17,6 +17,12 @@ const categoryConfig = {
   learning: { icon: 'learning' as AppIconName, label: 'Learning', color: 'bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300' },
 };
 
+const frequencyConfig = {
+  once: { label: 'Once', color: 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300' },
+  daily: { label: 'Daily', color: 'bg-indigo-100 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300' },
+  weekly: { label: 'Weekly', color: 'bg-violet-100 dark:bg-violet-950/50 text-violet-700 dark:text-violet-300' },
+} as const;
+
 const HomePage: React.FC = () => {
   const { user } = useAuthStore();
   const { openAddTaskModal, openAddHabitModal } = useUIStore();
@@ -31,13 +37,7 @@ const HomePage: React.FC = () => {
   const toggleTaskMutation = useToggleTaskMutation();
   const incrementHabitMutation = useIncrementHabitMutation();
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const todayTasks = tasks.filter((task) => {
-    const taskDate = new Date(task.date);
-    taskDate.setHours(0, 0, 0, 0);
-    return taskDate.getTime() === today.getTime();
-  });
+  const todayTasks = tasks;
 
   const completedToday = todayTasks.filter((task) => task.completed).length;
   const progress = todayTasks.length > 0 ? (completedToday / todayTasks.length) * 100 : 0;
@@ -184,6 +184,7 @@ const HomePage: React.FC = () => {
 
 const TaskCard: React.FC<{ task: Task; onToggle: () => void }> = ({ task, onToggle }) => {
   const category = categoryConfig[task.category];
+  const frequency = frequencyConfig[task.frequency];
 
   return (
     <div
@@ -215,6 +216,9 @@ const TaskCard: React.FC<{ task: Task; onToggle: () => void }> = ({ task, onTogg
           <div className="flex items-center gap-2 mt-1">
             <span className={`text-xs px-2 py-0.5 rounded-full ${category.color}`}>
               <AppIcon name={category.icon} className="w-3.5 h-3.5 inline-block mr-1 align-[-2px]" /> {category.label}
+            </span>
+            <span className={`text-xs px-2 py-0.5 rounded-full ${frequency.color}`}>
+              {frequency.label}
             </span>
             {task.time && (
               <span className="text-xs text-slate-400 dark:text-slate-500">{task.time}</span>

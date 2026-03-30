@@ -12,7 +12,6 @@ import { useAuthStore } from '../store';
 
 const DEFAULT_TASKS_LIMIT = 20;
 const ALL_TASKS_LIMIT = 100;
-
 type TaskFilter = 'all' | 'today' | 'upcoming' | 'completed';
 
 interface UseTasksOptions {
@@ -33,6 +32,59 @@ const buildTaskParams = (
 
 const flattenTaskPages = (data?: InfiniteData<TasksResponse, unknown>) =>
   data?.pages.flatMap((page) => page.tasks) ?? [];
+
+const startOfDay = (value: string | Date) => {
+  const date = new Date(value);
+  date.setHours(0, 0, 0, 0);
+  return date;
+};
+
+const getNextRecurringDate = (task: Task) => {
+  const baseDate = startOfDay(task.date);
+  const today = startOfDay(new Date());
+
+  if (task.frequency === 'daily') {
+    const nextDate = baseDate > today ? baseDate : today;
+    nextDate.setDate(nextDate.getDate() + 1);
+    return nextDate.toISOString();
+  }
+
+  if (task.frequency === 'weekly') {
+    const nextDate = new Date(baseDate);
+
+    if (nextDate > today) {
+      nextDate.setDate(nextDate.getDate() + 7);
+      return nextDate.toISOString();
+    }
+
+    while (nextDate.getTime() <= today.getTime()) {
+      nextDate.setDate(nextDate.getDate() + 7);
+    }
+
+    return nextDate.toISOString();
+  }
+
+  return task.date;
+};
+
+const getOptimisticToggleTask = (task: Task): Task => {
+  const now = new Date().toISOString();
+
+  if (task.frequency !== 'once' && !task.completed) {
+    return {
+      ...task,
+      completed: false,
+      date: getNextRecurringDate(task),
+      updatedAt: now,
+    };
+  }
+
+  return {
+    ...task,
+    completed: !task.completed,
+    updatedAt: now,
+  };
+};
 
 const updateInfiniteTaskPages = (
   data: InfiniteData<TasksResponse, unknown> | undefined,
@@ -224,15 +276,13 @@ export const useToggleTaskMutation = () => {
         queryKey: ['tasks', 'list'],
       });
 
+      const optimisticTask = getOptimisticToggleTask(task);
+
       queryClient.setQueriesData<InfiniteData<TasksResponse, unknown>>(
         { queryKey: ['tasks', 'list'] },
         (current) => updateInfiniteTaskPages(current, (currentTask) => (
           currentTask._id === task._id
-            ? {
-                ...currentTask,
-                completed: !currentTask.completed,
-                updatedAt: new Date().toISOString(),
-              }
+            ? optimisticTask
             : currentTask
         )),
       );
