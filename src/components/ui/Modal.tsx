@@ -49,26 +49,27 @@ const Modal: React.FC<ModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-fade-in"
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-fade-in"
         onClick={onClose}
       />
       {/* Modal */}
       <div
         className={`
           relative w-full ${sizes[size]} bg-white rounded-t-2xl sm:rounded-2xl
+          dark:bg-slate-900
           shadow-xl animate-slide-up sm:animate-scale-in
           max-h-[90vh] overflow-hidden flex flex-col
         `}
       >
         {/* Drag handle */}
         <div className="sm:hidden flex justify-center pt-3 pb-2">
-          <div className="w-10 h-1 bg-slate-300 rounded-full" />
+          <div className="w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full" />
         </div>
         
         {/* Header */}
         {title && (
-          <div className="px-6 py-4 border-b border-slate-100">
-            <h2 className="text-lg font-semibold text-slate-800">{title}</h2>
+          <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800">
+            <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100">{title}</h2>
           </div>
         )}
         

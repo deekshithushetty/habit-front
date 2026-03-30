@@ -38,7 +38,7 @@ const BottomNav: React.FC = () => {
   const { activeTab, setActiveTab } = useUIStore();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-40 pb-safe">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 z-40 pb-safe transition-colors">
       <div className="max-w-lg mx-auto flex items-center justify-around">
         {tabs.map(({ id, label, Icon }) => {
           const isActive = activeTab === id;
@@ -49,7 +49,7 @@ const BottomNav: React.FC = () => {
               className={`
                 flex flex-col items-center py-2 px-4 min-w-[64px]
                 transition-colors duration-200
-                ${isActive ? 'text-indigo-500' : 'text-slate-400 hover:text-slate-600'}
+                ${isActive ? 'text-indigo-500' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-200'}
               `}
               aria-label={label}
               aria-current={isActive ? 'page' : undefined}

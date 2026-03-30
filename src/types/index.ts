@@ -31,8 +31,16 @@ export interface Task {
   updatedAt: string;
 }
 
+export interface PaginationMeta {
+  page: number;
+  limit: number;
+  total: number;
+  hasMore: boolean;
+}
+
 export interface TasksResponse {
   count: number;
+  pagination: PaginationMeta;
   tasks: Task[];
 }
 
@@ -75,6 +83,7 @@ export interface Habit {
 
 export interface HabitsResponse {
   count: number;
+  pagination: PaginationMeta;
   habits: Habit[];
 }
 

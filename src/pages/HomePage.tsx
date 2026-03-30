@@ -1,43 +1,46 @@
-import React, { useEffect } from 'react';
-import { useAuthStore, useTasksStore, useHabitsStore, useUIStore } from '../store';
+import React from 'react';
+import { useAuthStore, useUIStore } from '../store';
+import { useHabits, useIncrementHabitMutation } from '../hooks/useHabits';
+import { useTasks, useToggleTaskMutation } from '../hooks/useTasks';
 import Layout from '../components/layout/Layout';
 import ProgressRing from '../components/ui/ProgressRing';
 import EmptyState from '../components/ui/EmptyState';
+import Button from '../components/ui/Button';
 import { TaskSkeleton, HabitSkeleton } from '../components/ui/Skeleton';
 import type { Task, Habit } from '../types';
 
-// Category config
 const categoryConfig = {
-  work: { emoji: '💼', label: 'Work', color: 'bg-blue-100 text-blue-700' },
-  personal: { emoji: '🏠', label: 'Personal', color: 'bg-purple-100 text-purple-700' },
-  health: { emoji: '💪', label: 'Health', color: 'bg-green-100 text-green-700' },
-  learning: { emoji: '📚', label: 'Learning', color: 'bg-amber-100 text-amber-700' },
+  work: { emoji: '💼', label: 'Work', color: 'bg-blue-100 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300' },
+  personal: { emoji: '🏠', label: 'Personal', color: 'bg-purple-100 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300' },
+  health: { emoji: '💪', label: 'Health', color: 'bg-green-100 dark:bg-green-950/50 text-green-700 dark:text-green-300' },
+  learning: { emoji: '📚', label: 'Learning', color: 'bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300' },
 };
 
 const HomePage: React.FC = () => {
   const { user } = useAuthStore();
-  const { tasks, fetchTasks, toggleComplete, isLoading: tasksLoading } = useTasksStore();
-  const { habits, fetchHabits, incrementProgress, isLoading: habitsLoading } = useHabitsStore();
   const { openAddTaskModal, openAddHabitModal } = useUIStore();
+  const { tasks, isInitialLoading: tasksLoading } = useTasks({ filter: 'today', limit: 50 });
+  const {
+    habits,
+    hasMore: hasMoreHabits,
+    isInitialLoading: habitsLoading,
+    isFetchingNextPage: habitsLoadingMore,
+    fetchNextPage: loadMoreHabits,
+  } = useHabits({ limit: 8 });
+  const toggleTaskMutation = useToggleTaskMutation();
+  const incrementHabitMutation = useIncrementHabitMutation();
 
-  useEffect(() => {
-    fetchTasks();
-    fetchHabits();
-  }, []);
-
-  // Get today's tasks
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const todayTasks = tasks.filter((t) => {
-    const taskDate = new Date(t.date);
+  const todayTasks = tasks.filter((task) => {
+    const taskDate = new Date(task.date);
     taskDate.setHours(0, 0, 0, 0);
     return taskDate.getTime() === today.getTime();
   });
-  
-  const completedToday = todayTasks.filter((t) => t.completed).length;
+
+  const completedToday = todayTasks.filter((task) => task.completed).length;
   const progress = todayTasks.length > 0 ? (completedToday / todayTasks.length) * 100 : 0;
 
-  // Greeting based on time
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return 'Good morning';
@@ -45,32 +48,28 @@ const HomePage: React.FC = () => {
     return 'Good evening';
   };
 
-  // Format date
-  const formatDate = () => {
-    return new Date().toLocaleDateString('en-US', {
+  const formatDate = () =>
+    new Date().toLocaleDateString('en-US', {
       weekday: 'long',
       month: 'long',
       day: 'numeric',
     });
-  };
 
   return (
     <Layout>
       <div className="space-y-6 animate-fade-in">
-        {/* Header */}
         <div className="pt-4">
-          <h1 className="text-2xl font-bold text-slate-800">
+          <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">
             {getGreeting()}, {user?.name?.split(' ')[0] || 'there'}! 👋
           </h1>
-          <p className="text-slate-500 mt-1">{formatDate()}</p>
+          <p className="text-slate-500 dark:text-slate-400 mt-1">{formatDate()}</p>
         </div>
 
-        {/* Progress Card */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-800">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-slate-800">Today's Progress</h2>
-              <p className="text-sm text-slate-500 mt-1">
+              <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100">Today's Progress</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
                 {completedToday} of {todayTasks.length} tasks completed
               </p>
             </div>
@@ -83,10 +82,9 @@ const HomePage: React.FC = () => {
           </div>
         </div>
 
-        {/* Today's Tasks */}
         <section>
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-semibold text-slate-800">Today's Tasks</h2>
+            <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100">Today's Tasks</h2>
             <button
               onClick={() => openAddTaskModal()}
               className="text-indigo-500 text-sm font-medium hover:text-indigo-600"
@@ -94,7 +92,7 @@ const HomePage: React.FC = () => {
               + Add
             </button>
           </div>
-          
+
           {tasksLoading ? (
             <div className="space-y-3">
               <TaskSkeleton />
@@ -111,10 +109,10 @@ const HomePage: React.FC = () => {
           ) : (
             <div className="space-y-3">
               {todayTasks.slice(0, 5).map((task) => (
-                <TaskCard key={task._id} task={task} onToggle={() => toggleComplete(task._id)} />
+                <TaskCard key={task._id} task={task} onToggle={() => toggleTaskMutation.mutate(task)} />
               ))}
               {todayTasks.length > 5 && (
-                <p className="text-center text-sm text-slate-500 py-2">
+                <p className="text-center text-sm text-slate-500 dark:text-slate-400 py-2">
                   +{todayTasks.length - 5} more tasks
                 </p>
               )}
@@ -122,10 +120,9 @@ const HomePage: React.FC = () => {
           )}
         </section>
 
-        {/* Active Habits */}
         <section>
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-semibold text-slate-800">Active Habits</h2>
+            <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100">Active Habits</h2>
             <button
               onClick={() => openAddHabitModal()}
               className="text-indigo-500 text-sm font-medium hover:text-indigo-600"
@@ -133,7 +130,7 @@ const HomePage: React.FC = () => {
               + Add
             </button>
           </div>
-          
+
           {habitsLoading ? (
             <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
               <HabitSkeleton />
@@ -148,16 +145,29 @@ const HomePage: React.FC = () => {
               onAction={() => openAddHabitModal()}
             />
           ) : (
-            <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
-              {habits.map((habit) => (
-                <HabitCard key={habit._id} habit={habit} onIncrement={() => incrementProgress(habit._id)} />
-              ))}
+            <div className="space-y-3">
+              <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+                {habits.map((habit) => (
+                  <HabitCard key={habit._id} habit={habit} onIncrement={() => incrementHabitMutation.mutate(habit)} />
+                ))}
+              </div>
+              {hasMoreHabits && (
+                <div className="px-4">
+                  <Button
+                    variant="secondary"
+                    className="w-full"
+                    isLoading={habitsLoadingMore}
+                    onClick={() => loadMoreHabits()}
+                  >
+                    Load more habits
+                  </Button>
+                </div>
+              )}
             </div>
           )}
         </section>
       </div>
 
-      {/* FAB */}
       <button
         onClick={() => openAddTaskModal()}
         className="fixed bottom-24 right-4 w-14 h-14 bg-indigo-500 text-white rounded-full shadow-lg hover:bg-indigo-600 transition-colors flex items-center justify-center z-30"
@@ -171,14 +181,13 @@ const HomePage: React.FC = () => {
   );
 };
 
-// Task Card Component
 const TaskCard: React.FC<{ task: Task; onToggle: () => void }> = ({ task, onToggle }) => {
   const category = categoryConfig[task.category];
-  
+
   return (
     <div
-      className={`bg-white rounded-xl p-4 shadow-sm border transition-all ${
-        task.completed ? 'border-green-100' : 'border-slate-100'
+      className={`bg-white dark:bg-slate-900 rounded-xl p-4 shadow-sm border transition-all ${
+        task.completed ? 'border-green-100 dark:border-green-900/40' : 'border-slate-100 dark:border-slate-800'
       }`}
     >
       <div className="flex items-center gap-3">
@@ -187,7 +196,7 @@ const TaskCard: React.FC<{ task: Task; onToggle: () => void }> = ({ task, onTogg
           className={`w-6 h-6 rounded-full border-2 flex-shrink-0 transition-all flex items-center justify-center ${
             task.completed
               ? 'bg-green-500 border-green-500'
-              : 'border-slate-300 hover:border-indigo-400'
+              : 'border-slate-300 dark:border-slate-600 hover:border-indigo-400'
           }`}
           aria-label={task.completed ? 'Mark incomplete' : 'Mark complete'}
         >
@@ -197,17 +206,17 @@ const TaskCard: React.FC<{ task: Task; onToggle: () => void }> = ({ task, onTogg
             </svg>
           )}
         </button>
-        
+
         <div className="flex-1 min-w-0">
-          <p className={`font-medium ${task.completed ? 'text-slate-400 line-through' : 'text-slate-800'}`}>
+          <p className={`font-medium ${task.completed ? 'text-slate-400 dark:text-slate-500 line-through' : 'text-slate-800 dark:text-slate-100'}`}>
             {task.title}
           </p>
           <div className="flex items-center gap-2 mt-1">
             <span className={`text-xs px-2 py-0.5 rounded-full ${category.color}`}>
-              {category.emoji} {category.label}
+              <span className="emoji-safe">{category.emoji}</span> {category.label}
             </span>
             {task.time && (
-              <span className="text-xs text-slate-400">{task.time}</span>
+              <span className="text-xs text-slate-400 dark:text-slate-500">{task.time}</span>
             )}
           </div>
         </div>
@@ -216,32 +225,30 @@ const TaskCard: React.FC<{ task: Task; onToggle: () => void }> = ({ task, onTogg
   );
 };
 
-// Habit Card Component
 const HabitCard: React.FC<{ habit: Habit; onIncrement: () => void }> = ({ habit, onIncrement }) => {
   const progressPercent = Math.min((habit.progress / habit.target) * 100, 100);
-  
+
   return (
-    <div className="flex-shrink-0 w-40 bg-white rounded-xl p-4 shadow-sm border border-slate-100">
+    <div className="flex-shrink-0 w-40 bg-white dark:bg-slate-900 rounded-xl p-4 shadow-sm border border-slate-100 dark:border-slate-800">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-2xl">{habit.icon}</span>
+        <span className="emoji-safe text-2xl">{habit.icon}</span>
         {habit.streak >= 7 && (
-          <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium">
-            🔥 {habit.streak}
+          <span className="text-xs bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 px-2 py-0.5 rounded-full font-medium">
+            <span className="emoji-safe">🔥</span> {habit.streak}
           </span>
         )}
       </div>
-      <h3 className="font-medium text-slate-800 text-sm truncate">{habit.name}</h3>
-      
-      {/* Progress bar */}
-      <div className="mt-3 h-2 bg-slate-100 rounded-full overflow-hidden">
+      <h3 className="font-medium text-slate-800 dark:text-slate-100 text-sm truncate">{habit.name}</h3>
+
+      <div className="mt-3 h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
         <div
           className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-300"
           style={{ width: `${progressPercent}%` }}
         />
       </div>
-      
+
       <div className="flex items-center justify-between mt-2">
-        <span className="text-xs text-slate-500">
+        <span className="text-xs text-slate-500 dark:text-slate-400">
           {habit.progress}/{habit.target}
         </span>
         <button

@@ -1,91 +1,98 @@
 import React from 'react';
-import { useAuthStore, useHabitsStore } from '../store';
+import { useAuthStore, useUIStore } from '../store';
+import { useAllHabits } from '../hooks/useHabits';
 import Layout from '../components/layout/Layout';
+import Button from '../components/ui/Button';
 
 const ProfilePage: React.FC = () => {
   const { user, logout } = useAuthStore();
-  const { habits } = useHabitsStore();
+  const { theme, toggleTheme } = useUIStore();
+  const { data: habits = [] } = useAllHabits();
 
-  const longestStreak = habits.reduce((max, h) => Math.max(max, h.streak), 0);
-  const totalProgress = habits.reduce((sum, h) => sum + h.progress, 0);
+  const longestStreak = habits.reduce((max, habit) => Math.max(max, habit.streak), 0);
+  const totalProgress = habits.reduce((sum, habit) => sum + habit.progress, 0);
 
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('en-US', {
+  const formatDate = (dateStr: string) =>
+    new Date(dateStr).toLocaleDateString('en-US', {
       month: 'long',
       year: 'numeric',
     });
-  };
 
   return (
     <Layout>
       <div className="space-y-6 animate-fade-in">
-        {/* Header */}
         <div className="pt-4">
-          <h1 className="text-2xl font-bold text-slate-800">Profile</h1>
+          <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Profile</h1>
         </div>
 
-        {/* Profile Card */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 text-center">
-          {/* Avatar */}
+        <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-800 text-center">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full text-white text-3xl font-bold mb-4">
             {user?.name?.charAt(0).toUpperCase() || 'U'}
           </div>
-          
-          <h2 className="text-xl font-bold text-slate-800">{user?.name}</h2>
-          <p className="text-slate-500 text-sm mt-1">{user?.email}</p>
-          
-          <div className="mt-4 pt-4 border-t border-slate-100">
-            <p className="text-xs text-slate-400">
+
+          <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">{user?.name}</h2>
+          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">{user?.email}</p>
+
+          <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+            <p className="text-xs text-slate-400 dark:text-slate-500">
               Member since {user?.createdAt ? formatDate(user.createdAt) : 'Unknown'}
             </p>
           </div>
         </div>
 
-        {/* Stats */}
         <div className="grid grid-cols-3 gap-3">
-          <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100 text-center">
+          <div className="bg-white dark:bg-slate-900 rounded-xl p-4 shadow-sm border border-slate-100 dark:border-slate-800 text-center">
             <p className="text-2xl font-bold text-indigo-500">{habits.length}</p>
-            <p className="text-xs text-slate-500 mt-1">Habits</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Habits</p>
           </div>
-          <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100 text-center">
-            <p className="text-2xl font-bold text-amber-500">🔥</p>
-            <p className="text-xs text-slate-500 mt-1">{longestStreak} best</p>
+          <div className="bg-white dark:bg-slate-900 rounded-xl p-4 shadow-sm border border-slate-100 dark:border-slate-800 text-center">
+            <p className="emoji-safe text-2xl font-bold text-amber-500">🔥</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{longestStreak} best</p>
           </div>
-          <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100 text-center">
+          <div className="bg-white dark:bg-slate-900 rounded-xl p-4 shadow-sm border border-slate-100 dark:border-slate-800 text-center">
             <p className="text-2xl font-bold text-purple-500">{totalProgress}</p>
-            <p className="text-xs text-slate-500 mt-1">Progress</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Progress</p>
           </div>
         </div>
 
-        {/* Active Habits */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-          <h3 className="text-lg font-semibold text-slate-800 mb-4">Your Habits</h3>
-          
+        <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-800">
+          <div className="flex items-center justify-between gap-3 mb-4">
+            <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">Preferences</h3>
+            <Button variant="secondary" onClick={toggleTheme}>
+              {theme === 'dark' ? 'Use light mode' : 'Use dark mode'}
+            </Button>
+          </div>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            Switch between light and dark themes. Your preference is saved on this device.
+          </p>
+        </div>
+
+        <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-800">
+          <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-4">Your Habits</h3>
+
           {habits.length === 0 ? (
-            <p className="text-center text-slate-500 py-4">No habits created yet</p>
+            <p className="text-center text-slate-500 dark:text-slate-400 py-4">No habits created yet</p>
           ) : (
             <div className="space-y-3">
               {habits.map((habit) => (
                 <div
                   key={habit._id}
-                  className="flex items-center justify-between p-3 bg-slate-50 rounded-xl"
+                  className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-xl"
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{habit.icon}</span>
                     <div>
-                      <p className="font-medium text-slate-800">{habit.name}</p>
-                      <p className="text-xs text-slate-500">
+                      <p className="font-medium text-slate-800 dark:text-slate-100">{habit.name}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
                         Target: {habit.target}/week
                       </p>
                     </div>
                   </div>
                   <div className="text-right">
                     {habit.streak > 0 && (
-                      <p className="text-sm font-medium text-amber-500">
-                        🔥 {habit.streak} day streak
-                      </p>
+                      <p className="text-sm font-medium text-amber-500"><span className="emoji-safe">🔥</span> {habit.streak} day streak</p>
                     )}
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
                       {habit.progress}/{habit.target} this week
                     </p>
                   </div>
@@ -95,10 +102,9 @@ const ProfilePage: React.FC = () => {
           )}
         </div>
 
-        {/* Achievements placeholder */}
         <div className="bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl p-6 text-white">
           <div className="flex items-center gap-3 mb-3">
-            <span className="text-3xl">🏆</span>
+            <span className="emoji-safe text-3xl">🏆</span>
             <div>
               <h3 className="font-semibold">Achievements</h3>
               <p className="text-sm text-white/80">Coming soon!</p>
@@ -109,10 +115,9 @@ const ProfilePage: React.FC = () => {
           </p>
         </div>
 
-        {/* Logout */}
         <button
           onClick={logout}
-          className="w-full py-3 px-4 bg-red-50 text-red-600 font-medium rounded-xl hover:bg-red-100 transition-colors flex items-center justify-center gap-2"
+          className="w-full py-3 px-4 bg-red-50 dark:bg-red-950/30 text-red-600 font-medium rounded-xl hover:bg-red-100 dark:hover:bg-red-950/50 transition-colors flex items-center justify-center gap-2"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -120,10 +125,9 @@ const ProfilePage: React.FC = () => {
           Log Out
         </button>
 
-        {/* App info */}
         <div className="text-center py-4">
-          <p className="text-xs text-slate-400">TaskFlow v1.0.0</p>
-          <p className="text-xs text-slate-400 mt-1">Built with ❤️ using MERN Stack</p>
+          <p className="text-xs text-slate-400 dark:text-slate-500">TaskFlow v1.0.0</p>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">Built with care using MERN Stack</p>
         </div>
       </div>
     </Layout>

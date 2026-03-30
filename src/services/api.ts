@@ -69,7 +69,12 @@ export const authApi = {
 
 // Tasks API
 export const tasksApi = {
-  getAll: async (params?: { filter?: string; category?: string }): Promise<TasksResponse> => {
+  getAll: async (params?: {
+    filter?: string;
+    category?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<TasksResponse> => {
     const response = await api.get<TasksResponse>('/tasks', { params });
     return response.data;
   },
@@ -92,8 +97,8 @@ export const tasksApi = {
 
 // Habits API
 export const habitsApi = {
-  getAll: async (): Promise<HabitsResponse> => {
-    const response = await api.get<HabitsResponse>('/habits');
+  getAll: async (params?: { page?: number; limit?: number }): Promise<HabitsResponse> => {
+    const response = await api.get<HabitsResponse>('/habits', { params });
     return response.data;
   },
 

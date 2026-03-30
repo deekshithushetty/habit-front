@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useTasksStore, useUIStore } from '../store';
+import { useUIStore } from '../store';
+import { useAddTaskMutation, useUpdateTaskMutation } from '../hooks/useTasks';
 import Modal from '../components/ui/Modal';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
@@ -20,7 +21,8 @@ const frequencyOptions: { value: TaskFrequency; label: string }[] = [
 
 const AddTaskModal: React.FC = () => {
   const { isAddTaskModalOpen, editingTask, closeAddTaskModal } = useUIStore();
-  const { addTask, updateTask } = useTasksStore();
+  const addTaskMutation = useAddTaskMutation();
+  const updateTaskMutation = useUpdateTaskMutation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -67,20 +69,15 @@ const AddTaskModal: React.FC = () => {
         date: formData.date,
       };
 
-      let success;
       if (editingTask) {
-        success = await updateTask(editingTask._id, taskData);
+        await updateTaskMutation.mutateAsync({ id: editingTask._id, updates: taskData });
       } else {
-        success = await addTask(taskData);
+        await addTaskMutation.mutateAsync(taskData);
       }
 
-      if (success) {
-        closeAddTaskModal();
-      } else {
-        setError('Failed to save task. Please try again.');
-      }
+      closeAddTaskModal();
     } catch {
-      setError('An error occurred. Please try again.');
+      setError('Failed to save task. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -105,7 +102,7 @@ const AddTaskModal: React.FC = () => {
 
         {/* Category */}
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
             Category
           </label>
           <div className="grid grid-cols-4 gap-2">
@@ -116,12 +113,12 @@ const AddTaskModal: React.FC = () => {
                 onClick={() => setFormData((prev) => ({ ...prev, category: value }))}
                 className={`p-3 rounded-xl text-center transition-all ${
                   formData.category === value
-                    ? 'bg-indigo-100 ring-2 ring-indigo-500'
-                    : 'bg-slate-50 hover:bg-slate-100'
+                    ? 'bg-indigo-100 dark:bg-indigo-950/50 ring-2 ring-indigo-500'
+                    : 'bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700'
                 }`}
               >
-                <span className="text-xl block mb-1">{emoji}</span>
-                <span className="text-xs font-medium text-slate-600">{label}</span>
+                <span className="emoji-safe text-xl block mb-1">{emoji}</span>
+                <span className="text-xs font-medium text-slate-600 dark:text-slate-300">{label}</span>
               </button>
             ))}
           </div>
@@ -130,33 +127,33 @@ const AddTaskModal: React.FC = () => {
         {/* Date & Time */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
               Date
             </label>
             <input
               type="date"
               value={formData.date}
               onChange={(e) => setFormData((prev) => ({ ...prev, date: e.target.value }))}
-              className="w-full px-4 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+              className="w-full px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
               Time (optional)
             </label>
             <input
               type="time"
               value={formData.time}
               onChange={(e) => setFormData((prev) => ({ ...prev, time: e.target.value }))}
-              className="w-full px-4 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+              className="w-full px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
             />
           </div>
         </div>
 
         {/* Frequency */}
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
             Repeat
           </label>
           <div className="flex gap-2">
@@ -168,7 +165,7 @@ const AddTaskModal: React.FC = () => {
                 className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all ${
                   formData.frequency === value
                     ? 'bg-indigo-500 text-white'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
                 }`}
               >
                 {label}
@@ -179,7 +176,7 @@ const AddTaskModal: React.FC = () => {
 
         {/* Error */}
         {error && (
-          <div className="p-3 bg-red-50 border border-red-100 rounded-lg">
+          <div className="p-3 bg-red-50 dark:bg-red-950/40 border border-red-100 dark:border-red-900 rounded-lg">
             <p className="text-sm text-red-600">{error}</p>
           </div>
         )}
