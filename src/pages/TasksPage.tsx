@@ -8,10 +8,10 @@ import { TaskSkeleton } from '../components/ui/Skeleton';
 import type { Task } from '../types';
 
 const categoryConfig = {
-  work: { emoji: '💼', label: 'Work', color: 'bg-blue-100 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300' },
-  personal: { emoji: '🏠', label: 'Personal', color: 'bg-purple-100 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300' },
-  health: { emoji: '💪', label: 'Health', color: 'bg-green-100 dark:bg-green-950/50 text-green-700 dark:text-green-300' },
-  learning: { emoji: '📚', label: 'Learning', color: 'bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300' },
+  work: { emoji: '\u{1F4BC}', label: 'Work', color: 'bg-blue-100 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300' },
+  personal: { emoji: '\u{1F3E0}', label: 'Personal', color: 'bg-purple-100 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300' },
+  health: { emoji: '\u{1F4AA}', label: 'Health', color: 'bg-green-100 dark:bg-green-950/50 text-green-700 dark:text-green-300' },
+  learning: { emoji: '\u{1F4DA}', label: 'Learning', color: 'bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300' },
 };
 
 type FilterType = 'all' | 'today' | 'upcoming' | 'completed';
@@ -82,7 +82,7 @@ const TasksPage: React.FC = () => {
           </div>
         ) : filteredTasks.length === 0 ? (
           <EmptyState
-            icon="📋"
+            icon={'\u{1F4CB}'}
             title={searchQuery ? 'No matching tasks' : 'No tasks found'}
             description={searchQuery ? 'Try a different search term' : 'Add your first task to get started'}
             actionLabel={!searchQuery ? 'Add Task' : undefined}

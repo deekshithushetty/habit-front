@@ -6,11 +6,18 @@ import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import type { TaskCategory, TaskFrequency } from '../types';
 
+const CATEGORY_EMOJI = {
+  work: '\u{1F4BC}',
+  personal: '\u{1F3E0}',
+  health: '\u{1F4AA}',
+  learning: '\u{1F4DA}',
+} as const;
+
 const categoryOptions: { value: TaskCategory; label: string; emoji: string }[] = [
-  { value: 'work', label: 'Work', emoji: '💼' },
-  { value: 'personal', label: 'Personal', emoji: '🏠' },
-  { value: 'health', label: 'Health', emoji: '💪' },
-  { value: 'learning', label: 'Learning', emoji: '📚' },
+  { value: 'work', label: 'Work', emoji: CATEGORY_EMOJI.work },
+  { value: 'personal', label: 'Personal', emoji: CATEGORY_EMOJI.personal },
+  { value: 'health', label: 'Health', emoji: CATEGORY_EMOJI.health },
+  { value: 'learning', label: 'Learning', emoji: CATEGORY_EMOJI.learning },
 ];
 
 const frequencyOptions: { value: TaskFrequency; label: string }[] = [

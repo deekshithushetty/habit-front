@@ -5,7 +5,22 @@ import Modal from '../components/ui/Modal';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 
-const iconOptions = ['✨', '🏃', '📚', '💪', '🧘', '💧', '🎯', '🎨', '🎵', '💻', '🌱', '☕', '🛏️', '📝'];
+const iconOptions = [
+  '\u{2728}',
+  '\u{1F3C3}',
+  '\u{1F4DA}',
+  '\u{1F4AA}',
+  '\u{1F9D8}',
+  '\u{1F4A7}',
+  '\u{1F3AF}',
+  '\u{1F3A8}',
+  '\u{1F3B5}',
+  '\u{1F4BB}',
+  '\u{1F331}',
+  '\u{2615}',
+  '\u{1F6CF}\u{FE0F}',
+  '\u{1F4DD}',
+];
 
 const AddHabitModal: React.FC = () => {
   const { isAddHabitModalOpen, closeAddHabitModal } = useUIStore();
@@ -16,7 +31,7 @@ const AddHabitModal: React.FC = () => {
   const [formData, setFormData] = useState({
     name: '',
     target: 7,
-    icon: '✨',
+    icon: '\u{2728}',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -35,7 +50,7 @@ const AddHabitModal: React.FC = () => {
       setFormData({
         name: '',
         target: 7,
-        icon: '✨',
+        icon: '\u{2728}',
       });
     } catch {
       setError('Failed to create habit. Please try again.');
@@ -101,7 +116,7 @@ const AddHabitModal: React.FC = () => {
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 text-center">
             {formData.target === 7
-              ? 'Every day! 🌟'
+              ? 'Every day! \u{1F31F}'
               : `${7 - formData.target} rest day${7 - formData.target !== 1 ? 's' : ''} per week`}
           </p>
         </div>

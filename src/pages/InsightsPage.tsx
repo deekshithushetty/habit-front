@@ -177,10 +177,10 @@ const InsightsPage: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-2 gap-3">
-          <StatCard icon="✅" label="Tasks Completed" value={completedTasks.length.toString()} subtext={`${completionRate}% rate`} color="bg-green-50 dark:bg-green-950/30" />
-          <StatCard icon="📋" label="Total Tasks" value={totalTasks.toString()} subtext={`${totalTasks - completedTasks.length} remaining`} color="bg-blue-50 dark:bg-blue-950/30" />
-          <StatCard icon="🔥" label="Best Streak" value={longestStreak.toString()} subtext="days" color="bg-amber-50 dark:bg-amber-950/30" />
-          <StatCard icon="✨" label="Active Habits" value={activeHabits.toString()} subtext={`${totalHabitProgress} total progress`} color="bg-purple-50 dark:bg-purple-950/30" />
+          <StatCard icon={'\u{2705}'} label="Tasks Completed" value={completedTasks.length.toString()} subtext={`${completionRate}% rate`} color="bg-green-50 dark:bg-green-950/30" />
+          <StatCard icon={'\u{1F4CB}'} label="Total Tasks" value={totalTasks.toString()} subtext={`${totalTasks - completedTasks.length} remaining`} color="bg-blue-50 dark:bg-blue-950/30" />
+          <StatCard icon={'\u{1F525}'} label="Best Streak" value={longestStreak.toString()} subtext="days" color="bg-amber-50 dark:bg-amber-950/30" />
+          <StatCard icon={'\u{2728}'} label="Active Habits" value={activeHabits.toString()} subtext={`${totalHabitProgress} total progress`} color="bg-purple-50 dark:bg-purple-950/30" />
         </div>
 
         <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-800">
@@ -318,10 +318,10 @@ const InsightsPage: React.FC = () => {
             <div className="flex-1">
               <p className="text-white/80 text-sm">
                 {completionRate >= 80
-                  ? "Excellent! You're on fire! 🔥"
+                  ? `Excellent! You're on fire! ${'\u{1F525}'}`
                   : completionRate >= 50
-                    ? 'Good progress! Keep it up! 💪'
-                    : "Keep pushing! You've got this! 🌟"}
+                    ? `Good progress! Keep it up! ${'\u{1F4AA}'}`
+                    : `Keep pushing! You've got this! ${'\u{1F31F}'}`}
               </p>
               <div className="mt-2 h-2 bg-white/20 rounded-full overflow-hidden">
                 <div className="h-full bg-white rounded-full transition-all duration-500" style={{ width: `${completionRate}%` }} />
@@ -364,7 +364,7 @@ const HabitProgressItem: React.FC<{ habit: Habit }> = ({ habit }) => {
         <span className="text-xs text-slate-500 dark:text-slate-400">
           {habit.progress}/{habit.target}
           {habit.streak > 0 && (
-            <span className="ml-2 text-amber-500"><span className="emoji-safe">🔥</span> {habit.streak}</span>
+            <span className="ml-2 text-amber-500"><span className="emoji-safe">{'\u{1F525}'}</span> {habit.streak}</span>
           )}
         </span>
       </div>
