@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useUIStore } from '../store';
 import { useDeleteTaskMutation, useTasks, useToggleTaskMutation } from '../hooks/useTasks';
+import { addDaysToDateKey, formatMonthDay, getDateKey, getTodayDateKey } from '../lib/dates';
 import Layout from '../components/layout/Layout';
 import AppIcon, { AppIconName } from '../components/ui/AppIcon';
 import EmptyState from '../components/ui/EmptyState';
@@ -145,16 +146,13 @@ const TaskListItem: React.FC<{
   const frequency = frequencyConfig[task.frequency];
 
   const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const taskDate = new Date(dateStr);
-    taskDate.setHours(0, 0, 0, 0);
+    const dateKey = getDateKey(dateStr);
+    const todayKey = getTodayDateKey();
 
-    if (taskDate.getTime() === today.getTime()) return 'Today';
-    if (taskDate.getTime() === today.getTime() + 86400000) return 'Tomorrow';
+    if (dateKey === todayKey) return 'Today';
+    if (dateKey === addDaysToDateKey(todayKey, 1)) return 'Tomorrow';
 
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    return formatMonthDay(dateKey);
   };
 
   return (
@@ -190,6 +188,11 @@ const TaskListItem: React.FC<{
             <span className={`text-xs px-2 py-0.5 rounded-full ${frequency.color}`}>
               {frequency.label}
             </span>
+            {task.completed && (
+              <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300">
+                Completed
+              </span>
+            )}
             {task.time && (
               <span className="text-xs text-slate-400 dark:text-slate-500">{task.time}</span>
             )}

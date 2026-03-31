@@ -220,6 +220,11 @@ const TaskCard: React.FC<{ task: Task; onToggle: () => void }> = ({ task, onTogg
             <span className={`text-xs px-2 py-0.5 rounded-full ${frequency.color}`}>
               {frequency.label}
             </span>
+            {task.completed && (
+              <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300">
+                Completed
+              </span>
+            )}
             {task.time && (
               <span className="text-xs text-slate-400 dark:text-slate-500">{task.time}</span>
             )}

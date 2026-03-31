@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAuthStore, useUIStore } from '../store';
 import { useAllHabits } from '../hooks/useHabits';
+import { formatMonthYear } from '../lib/dates';
 import AppIcon, { resolveHabitIconName } from '../components/ui/AppIcon';
 import Layout from '../components/layout/Layout';
 import Button from '../components/ui/Button';
@@ -12,12 +13,6 @@ const ProfilePage: React.FC = () => {
 
   const longestStreak = habits.reduce((max, habit) => Math.max(max, habit.streak), 0);
   const totalProgress = habits.reduce((sum, habit) => sum + habit.progress, 0);
-
-  const formatDate = (dateStr: string) =>
-    new Date(dateStr).toLocaleDateString('en-US', {
-      month: 'long',
-      year: 'numeric',
-    });
 
   return (
     <Layout>
@@ -36,7 +31,7 @@ const ProfilePage: React.FC = () => {
 
           <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
             <p className="text-xs text-slate-400 dark:text-slate-500">
-              Member since {user?.createdAt ? formatDate(user.createdAt) : 'Unknown'}
+              Member since {user?.createdAt ? formatMonthYear(user.createdAt) : 'Unknown'}
             </p>
           </div>
         </div>

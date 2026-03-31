@@ -25,6 +25,7 @@ export interface Task {
   time: string | null;
   frequency: TaskFrequency;
   completed: boolean;
+  lastCompletedAt: string | null;
   date: string;
   isOverdue?: boolean;
   createdAt: string;

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAllHabits } from '../hooks/useHabits';
 import { useAllTasks } from '../hooks/useTasks';
+import { addDaysToDateKey, getDateKey, getTodayDateKey } from '../lib/dates';
 import Layout from '../components/layout/Layout';
 import AppIcon, { resolveHabitIconName } from '../components/ui/AppIcon';
 import {
@@ -24,11 +25,7 @@ const toDateKey = (date: Date) => {
   return `${year}-${month}-${day}`;
 };
 
-const normalizeDate = (value: string) => {
-  const date = new Date(value);
-  date.setHours(0, 0, 0, 0);
-  return date;
-};
+const normalizeDate = (value: string) => new Date(`${getDateKey(value)}T00:00:00`);
 
 const getHeatLevelClass = (count: number) => {
   if (count === 0) return 'bg-slate-100 dark:bg-slate-800';
@@ -117,22 +114,18 @@ const InsightsPage: React.FC = () => {
 
   const getWeeklyData = () => {
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const today = new Date();
+    const todayKey = getTodayDateKey();
     const data = [];
 
     for (let i = 6; i >= 0; i -= 1) {
-      const date = new Date(today);
-      date.setDate(date.getDate() - i);
-      date.setHours(0, 0, 0, 0);
+      const dateKey = addDaysToDateKey(todayKey, -i);
 
       const dayTasks = tasks.filter((task) => {
-        const taskDate = new Date(task.date);
-        taskDate.setHours(0, 0, 0, 0);
-        return taskDate.getTime() === date.getTime();
+        return getDateKey(task.date) === dateKey;
       });
 
       data.push({
-        day: days[date.getDay()],
+        day: days[new Date(`${dateKey}T00:00:00`).getDay()],
         completed: dayTasks.filter((task) => task.completed).length,
         total: dayTasks.length,
       });

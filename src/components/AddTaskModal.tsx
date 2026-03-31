@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useUIStore } from '../store';
 import { useAddTaskMutation, useUpdateTaskMutation } from '../hooks/useTasks';
+import { formatInputDate, getTodayDateKey } from '../lib/dates';
 import Modal from '../components/ui/Modal';
 import AppIcon, { AppIconName } from '../components/ui/AppIcon';
 import Button from '../components/ui/Button';
@@ -39,7 +40,7 @@ const AddTaskModal: React.FC = () => {
     category: 'personal' as TaskCategory,
     time: '',
     frequency: 'once' as TaskFrequency,
-    date: new Date().toISOString().split('T')[0],
+    date: getTodayDateKey(),
   });
 
   useEffect(() => {
@@ -49,7 +50,7 @@ const AddTaskModal: React.FC = () => {
         category: editingTask.category,
         time: editingTask.time || '',
         frequency: editingTask.frequency,
-        date: new Date(editingTask.date).toISOString().split('T')[0],
+        date: formatInputDate(editingTask.date),
       });
     } else {
       setFormData({
@@ -57,7 +58,7 @@ const AddTaskModal: React.FC = () => {
         category: 'personal',
         time: '',
         frequency: 'once',
-        date: new Date().toISOString().split('T')[0],
+        date: getTodayDateKey(),
       });
     }
     setError(null);
@@ -98,6 +99,28 @@ const AddTaskModal: React.FC = () => {
       title={editingTask ? 'Edit Task' : 'Add New Task'}
     >
       <form onSubmit={handleSubmit} className="space-y-5">
+        {editingTask && (
+          <div className={`rounded-xl border px-4 py-3 ${
+            editingTask.completed
+              ? 'border-green-200 bg-green-50 dark:border-green-900/40 dark:bg-green-950/20'
+              : 'border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/60'
+          }`}>
+            <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
+              Status: {editingTask.completed ? 'Completed' : 'Pending'}
+            </p>
+            {editingTask.completed && editingTask.lastCompletedAt && (
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                Completed on {new Date(editingTask.lastCompletedAt).toLocaleString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  hour: 'numeric',
+                  minute: '2-digit',
+                })}
+              </p>
+            )}
+          </div>
+        )}
+
         {/* Title */}
         <Input
           label="Task Title"
